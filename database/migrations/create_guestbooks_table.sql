@@ -1,0 +1,27 @@
+-- Create guestbooks table
+CREATE TABLE IF NOT EXISTS guestbooks (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  school_id INT NOT NULL,
+  guest_name VARCHAR(100) NOT NULL,
+  guest_type VARCHAR(30) NOT NULL COMMENT 'ORTU, ALUMNI, VENDOR, INSTANSI, DLL',
+  phone VARCHAR(30),
+  address TEXT,
+  purpose TEXT COMMENT 'Tujuan kunjungan',
+  related_person VARCHAR(100) COMMENT 'Bertemu dengan siapa',
+  visit_date DATE NOT NULL,
+  checkin_time DATETIME NOT NULL,
+  checkout_time DATETIME,
+  status VARCHAR(20) NOT NULL DEFAULT 'IN' COMMENT 'IN, OUT',
+  note TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_by INT,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  updated_by INT,
+  FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_school_id (school_id),
+  INDEX idx_visit_date (visit_date),
+  INDEX idx_status (status),
+  INDEX idx_guest_type (guest_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

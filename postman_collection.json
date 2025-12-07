@@ -1,0 +1,929 @@
+{
+  "info": {
+    "name": "EduLite API",
+    "description": "Multi-tenant School Management System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superadmin@edulite.id\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"YOUR_REFRESH_TOKEN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Schools",
+      "item": [
+        {
+          "name": "Get All Schools",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schools",
+              "host": ["{{base_url}}"],
+              "path": ["schools"]
+            }
+          }
+        },
+        {
+          "name": "Get School by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schools/1",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create School",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SDN002\",\n  \"name\": \"SD Negeri 2 Jakarta\",\n  \"domain\": \"sdn2-jakarta.edulite.id\",\n  \"address\": \"Jl. Pendidikan No. 2, Jakarta Selatan\",\n  \"phone\": \"021-87654321\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools",
+              "host": ["{{base_url}}"],
+              "path": ["schools"]
+            }
+          }
+        },
+        {
+          "name": "Update School",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SDN001\",\n  \"name\": \"SD Negeri 1 Jakarta (Updated)\",\n  \"phone\": \"021-11111111\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools/1",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete School",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/schools/1",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"name\": \"Siti Guru\",\n  \"email\": \"siti.guru@sdn1-jakarta.edulite.id\",\n  \"password\": \"guru123\",\n  \"role\": \"guru\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/students?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"name\": \"Ahmad Maulana\",\n  \"school_id\": 1,\n  \"academic_year_id\": 1,\n  \"grade_id\": 1,\n  \"class_id\": 1,\n  \"department_id\": null,\n  \"nis\": \"12345\",\n  \"nisn\": \"0012345678\",\n  \"date_of_birth\": \"2015-05-15\",\n  \"gender\": \"L\",\n  \"address\": \"Jl. Contoh No. 45\",\n  \"parent_name\": \"Bapak Ahmad\",\n  \"parent_phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": ["{{base_url}}"],
+              "path": ["students"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        {
+          "name": "Get All Teachers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/teachers?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["teachers"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 3,\n  \"school_id\": 1,\n  \"nip\": \"198505152010011001\",\n  \"position\": \"Guru Kelas\",\n  \"subject\": \"Matematika\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/teachers",
+              "host": ["{{base_url}}"],
+              "path": ["teachers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["roles"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Apps",
+      "item": [
+        {
+          "name": "Get All Apps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/apps",
+              "host": ["{{base_url}}"],
+              "path": ["apps"]
+            }
+          }
+        },
+        {
+          "name": "Create App",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ELMS\",\n  \"name\": \"E-Learning Management System\",\n  \"description\": \"Sistem Pembelajaran Online\",\n  \"base_url\": \"https://lms.edulite.id\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/apps",
+              "host": ["{{base_url}}"],
+              "path": ["apps"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "School Apps",
+      "item": [
+        {
+          "name": "Get School Apps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/school-apps?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["school-apps"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Activate App for School",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"app_id\": 1,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/school-apps",
+              "host": ["{{base_url}}"],
+              "path": ["school-apps"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Academic Years",
+      "item": [
+        {
+          "name": "Get All Academic Years",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/academic-years?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["academic-years"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Academic Year by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/academic-years/1",
+              "host": ["{{base_url}}"],
+              "path": ["academic-years", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Academic Year",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"name\": \"2024/2025\",\n  \"start_date\": \"2024-07-01\",\n  \"end_date\": \"2025-06-30\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/academic-years",
+              "host": ["{{base_url}}"],
+              "path": ["academic-years"]
+            }
+          }
+        },
+        {
+          "name": "Update Academic Year",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"2024/2025 (Updated)\",\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/academic-years/1",
+              "host": ["{{base_url}}"],
+              "path": ["academic-years", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Academic Year",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/academic-years/1",
+              "host": ["{{base_url}}"],
+              "path": ["academic-years", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Grades",
+      "item": [
+        {
+          "name": "Get All Grades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/grades?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["grades"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Grade by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/grades/1",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Grade",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"name\": \"Grade 10\",\n  \"level\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades",
+              "host": ["{{base_url}}"],
+              "path": ["grades"]
+            }
+          }
+        },
+        {
+          "name": "Update Grade",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 10 (Updated)\",\n  \"level\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades/1",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Grade",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/grades/1",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["departments"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments/1",
+              "host": ["{{base_url}}"],
+              "path": ["departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"name\": \"Computer Engineering\",\n  \"code\": \"TKJ\",\n  \"description\": \"Teknik Komputer dan Jaringan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/departments",
+              "host": ["{{base_url}}"],
+              "path": ["departments"]
+            }
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Computer Engineering (Updated)\",\n  \"code\": \"TKJ\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/departments/1",
+              "host": ["{{base_url}}"],
+              "path": ["departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments/1",
+              "host": ["{{base_url}}"],
+              "path": ["departments", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Classes",
+      "item": [
+        {
+          "name": "Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classes?school_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["classes"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Class by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classes/1",
+              "host": ["{{base_url}}"],
+              "path": ["classes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Class",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": 1,\n  \"grade_id\": 1,\n  \"department_id\": 1,\n  \"name\": \"10 TKJ 1\",\n  \"homeroom_teacher_id\": 1,\n  \"capacity\": 36\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classes",
+              "host": ["{{base_url}}"],
+              "path": ["classes"]
+            }
+          }
+        },
+        {
+          "name": "Update Class",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"10 TKJ 1 (Updated)\",\n  \"capacity\": 40\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classes/1",
+              "host": ["{{base_url}}"],
+              "path": ["classes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Class",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classes/1",
+              "host": ["{{base_url}}"],
+              "path": ["classes", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

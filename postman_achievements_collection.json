@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "EduLite API - Achievements",
+    "description": "Achievement Management System Endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "achievement_id",
+      "value": "1"
+    },
+    {
+      "key": "participant_id",
+      "value": "1"
+    },
+    {
+      "key": "result_id",
+      "value": "1"
+    },
+    {
+      "key": "document_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Achievements",
+      "item": [
+        {
+          "name": "Get All Achievements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["achievements"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Achievements (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements?page=1&limit=10&event_type=Olimpiade&level=Nasional",
+              "host": ["{{base_url}}"],
+              "path": ["achievements"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "event_type",
+                  "value": "Olimpiade"
+                },
+                {
+                  "key": "level",
+                  "value": "Nasional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Achievement by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Achievement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Olimpiade Matematika Nasional 2025\",\n  \"description\": \"Kompetisi matematika tingkat nasional untuk pelajar SMA\",\n  \"event_type\": \"Olimpiade\",\n  \"level\": \"Nasional\",\n  \"organizer\": \"Kemendikbud RI\",\n  \"event_date\": \"2025-08-15\",\n  \"location\": \"Jakarta Convention Center\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements",
+              "host": ["{{base_url}}"],
+              "path": ["achievements"]
+            }
+          }
+        },
+        {
+          "name": "Update Achievement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Olimpiade Matematika Nasional 2025 (Updated)\",\n  \"description\": \"Kompetisi matematika tingkat nasional - Updated\",\n  \"location\": \"Jakarta International Expo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Achievement",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Participants",
+      "item": [
+        {
+          "name": "Add Student Participant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": 100,\n  \"role\": \"Peserta\",\n  \"notes\": \"Wakil dari SMKN 1 Jakarta\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants"]
+            }
+          }
+        },
+        {
+          "name": "Add Teacher as Coach",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": 50,\n  \"role\": \"Pelatih\",\n  \"notes\": \"Guru Pembina Matematika\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants"]
+            }
+          }
+        },
+        {
+          "name": "Update Participant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Peserta\",\n  \"notes\": \"Updated notes\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Participant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Results",
+      "item": [
+        {
+          "name": "Add Result",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rank\": \"Juara 1\",\n  \"score\": \"95.5\",\n  \"category\": \"Tunggal Putra\",\n  \"notes\": \"Skor tertinggi nasional\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}/results",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}", "results"]
+            }
+          }
+        },
+        {
+          "name": "Update Result",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rank\": \"Juara 1\",\n  \"score\": \"96.0\",\n  \"notes\": \"Updated score\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}/results/{{result_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}", "results", "{{result_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Result",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}/results/{{result_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}", "results", "{{result_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Certificates",
+      "item": [
+        {
+          "name": "Upload Certificate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "certificate",
+                  "type": "file",
+                  "src": "/path/to/certificate.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}/results/{{result_id}}/certificate",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}", "results", "{{result_id}}", "certificate"]
+            }
+          }
+        },
+        {
+          "name": "Delete Certificate",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/participants/{{participant_id}}/results/{{result_id}}/certificate",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "participants", "{{participant_id}}", "results", "{{result_id}}", "certificate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/document.jpg"
+                },
+                {
+                  "key": "caption",
+                  "value": "Foto penyerahan piala",
+                  "type": "text"
+                },
+                {
+                  "key": "file_type",
+                  "value": "image",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/documents",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "documents"]
+            }
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/{{achievement_id}}/documents/{{document_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["achievements", "{{achievement_id}}", "documents", "{{document_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
