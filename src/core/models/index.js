@@ -27,6 +27,19 @@ import OutgoingLetterModel from "./OutgoingLetter.js";
 import LetterAttachmentModel from "./LetterAttachment.js";
 import LetterApprovalModel from "./LetterApproval.js";
 import LetterDispositionModel from "./LetterDisposition.js";
+import DocumentTypeModel from "./documentType.model.js";
+import StudentDocumentModel from "./studentDocument.model.js";
+import CardTemplateModel from "./cardTemplate.model.js";
+import ParentProfileModel from "./parentProfile.model.js";
+import ParentDocumentModel from "./parentDocument.model.js";
+import ViolationLevelModel from "./violationLevel.model.js";
+import ViolationTypeModel from "./violationType.model.js";
+import ViolationActionModel from "./violationAction.model.js";
+import StudentViolationModel from "./studentViolation.model.js";
+import RewardLevelModel from "./rewardLevel.model.js";
+import RewardTypeModel from "./rewardType.model.js";
+import RewardActionModel from "./rewardAction.model.js";
+import StudentRewardModel from "./studentReward.model.js";
 
 // Inisialisasi models
 const User = UserModel(sequelize, DataTypes);
@@ -54,6 +67,19 @@ const OutgoingLetter = OutgoingLetterModel(sequelize, DataTypes);
 const LetterAttachment = LetterAttachmentModel(sequelize, DataTypes);
 const LetterApproval = LetterApprovalModel(sequelize, DataTypes);
 const LetterDisposition = LetterDispositionModel(sequelize, DataTypes);
+const DocumentType = DocumentTypeModel(sequelize, DataTypes);
+const StudentDocument = StudentDocumentModel(sequelize, DataTypes);
+const CardTemplate = CardTemplateModel(sequelize, DataTypes);
+const ParentProfile = ParentProfileModel(sequelize, DataTypes);
+const ParentDocument = ParentDocumentModel(sequelize, DataTypes);
+const ViolationLevel = ViolationLevelModel(sequelize, DataTypes);
+const ViolationType = ViolationTypeModel(sequelize, DataTypes);
+const ViolationAction = ViolationActionModel(sequelize, DataTypes);
+const StudentViolation = StudentViolationModel(sequelize, DataTypes);
+const RewardLevel = RewardLevelModel(sequelize, DataTypes);
+const RewardType = RewardTypeModel(sequelize, DataTypes);
+const RewardAction = RewardActionModel(sequelize, DataTypes);
+const StudentReward = StudentRewardModel(sequelize, DataTypes);
 
 // Setup associations
 const models = {
@@ -82,6 +108,19 @@ const models = {
   LetterAttachment,
   LetterApproval,
   LetterDisposition,
+  DocumentType,
+  StudentDocument,
+  CardTemplate,
+  ParentProfile,
+  ParentDocument,
+  ViolationLevel,
+  ViolationType,
+  ViolationAction,
+  StudentViolation,
+  RewardLevel,
+  RewardType,
+  RewardAction,
+  StudentReward,
 };
 
 Object.keys(models).forEach((modelName) => {
@@ -119,7 +158,20 @@ export {
   Guestbook,
   IncomingLetter,
   OutgoingLetter,
-  LetterAttachment,
+  ViolationLevel,
+  ViolationType,
+  ViolationAction,
+  StudentViolation,
+  RewardLevel,
+  RewardType,
+  RewardAction,
+  StudentReward,
+  CardTemplate,
+  ParentProfile,
+  ParentDocument,
   LetterApproval,
-  LetterDisposition
+  LetterAttachment,
+  LetterDisposition,
+  DocumentType,
+  StudentDocument,
 };

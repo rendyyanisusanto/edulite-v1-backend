@@ -22,6 +22,12 @@ import achievementRoutes from "./core/routes/achievementRoutes.js";
 import guestbookRoutes from "./core/routes/guestbookRoutes.js";
 import incomingLetterRoutes from "./core/routes/incomingLetterRoutes.js";
 import outgoingLetterRoutes from "./core/routes/outgoingLetterRoutes.js";
+import studentDocumentRoutes from "./core/routes/studentDocumentRoutes.js";
+import cardTemplateRoutes from "./core/routes/cardTemplateRoutes.js";
+import parentProfileRoutes from "./core/routes/parentProfileRoutes.js";
+import violationRoutes from "./core/routes/violationRoutes.js";
+import rewardRoutes from "./core/routes/rewardRoutes.js";
+import pointRecapRoutes from "./core/routes/pointRecapRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -48,7 +54,13 @@ app.use("/api/achievements", achievementRoutes);
 app.use("/api/guestbooks", guestbookRoutes);
 app.use("/api/incoming-letters", incomingLetterRoutes);
 app.use("/api/outgoing-letters", outgoingLetterRoutes);
+app.use("/api/card-templates", cardTemplateRoutes);
+app.use("/api/parent-profiles", parentProfileRoutes);
+app.use("/api/violations", violationRoutes);
+app.use("/api/rewards", rewardRoutes);
+app.use("/api/point-recap", pointRecapRoutes);
 
+// Health check endpoint
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });

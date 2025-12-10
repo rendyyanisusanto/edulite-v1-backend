@@ -40,6 +40,11 @@ export default (sequelize, DataTypes) => {
       parent_phone: { type: DataTypes.STRING(30), allowNull: true },
       photo: { type: DataTypes.STRING(500), allowNull: true, comment: "URL foto siswa di MinIO" },
       photo_key: { type: DataTypes.STRING(255), allowNull: true, comment: "Key file di MinIO" },
+      rfid_code: { type: DataTypes.STRING(100), allowNull: true, comment: "Kode RFID kartu siswa" },
+      qr_code: { type: DataTypes.STRING(255), allowNull: true, comment: "URL atau encoding QR code" },
+      barcode: { type: DataTypes.STRING(100), allowNull: true, comment: "Barcode kartu siswa" },
+      card_template_id: { type: DataTypes.INTEGER, allowNull: true, comment: "Template kartu yang digunakan" },
+      card_number: { type: DataTypes.STRING(100), allowNull: true, comment: "Nomor kartu siswa (auto generate)" },
       created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
       updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     },
@@ -69,6 +74,14 @@ export default (sequelize, DataTypes) => {
     Student.belongsTo(models.Department, {
       foreignKey: "department_id",
       as: "department",
+    });
+    Student.belongsTo(models.CardTemplate, {
+      foreignKey: "card_template_id",
+      as: "cardTemplate",
+    });
+    Student.hasMany(models.ParentProfile, {
+      foreignKey: "student_id",
+      as: "parents",
     });
   };
 

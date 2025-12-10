@@ -9,6 +9,7 @@ import {
   User,
 } from "../models/index.js";
 import { uploadFile, deleteFile } from "../../config/minio.js";
+import { Op } from "sequelize";
 
 // Get all achievements with pagination
 export const getAllAchievements = async (req, res) => {
@@ -805,6 +806,173 @@ export const deleteDocument = async (req, res) => {
     res.status(200).json({ message: "Document deleted successfully" });
   } catch (error) {
     console.error("Error in deleteDocument:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get achievement statistics
+export const getAchievementStatistics = async (req, res) => {
+  try {
+    const { school_id } = req.user;
+    const { year, month } = req.query;
+
+    // Build where clause
+    const whereClause = { school_id };
+
+    // Filter by year and/or month
+    if (year) {
+      if (month) {
+        // Specific month and year
+        const startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0); // Last day of month
+        
+        whereClause.event_date = {
+          [Op.between]: [startDate, endDate]
+        };
+      } else {
+        // Whole year
+        const startDate = new Date(`${year}-01-01`);
+        const endDate = new Date(`${year}-12-31`);
+        
+        whereClause.event_date = {
+          [Op.between]: [startDate, endDate]
+        };
+      }
+    }
+
+    // Get all achievements with participants
+    const achievements = await Achievement.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: AchievementParticipant,
+          as: "participants",
+          include: [
+            {
+              model: Student,
+              as: "student",
+              attributes: ["id", "name", "nisn"],
+            },
+            {
+              model: Teacher,
+              as: "teacher",
+              attributes: ["id", "name", "nip"],
+            },
+            {
+              model: AchievementResult,
+              as: "results",
+            },
+          ],
+        },
+      ],
+      order: [["event_date", "DESC"]],
+    });
+
+    // Calculate statistics
+    const stats = {
+      total: achievements.length,
+      totalParticipants: 0,
+      studentParticipants: 0,
+      teacherParticipants: 0,
+      byEventType: {},
+      byLevel: {},
+      byMonth: {},
+      topRanks: {},
+      achievementsWithResults: 0,
+      averageParticipantsPerEvent: 0,
+    };
+
+    // Initialize event types
+    const eventTypes = ['ACADEMIC', 'SPORTS', 'ARTS', 'SCIENCE', 'TECHNOLOGY', 'SOCIAL', 'OTHER'];
+    eventTypes.forEach(type => stats.byEventType[type] = 0);
+
+    // Initialize levels
+    const levels = ['SCHOOL', 'DISTRICT', 'CITY', 'PROVINCE', 'NATIONAL', 'INTERNATIONAL'];
+    levels.forEach(level => stats.byLevel[level] = 0);
+
+    let totalParticipantsCount = 0;
+    let hasResults = false;
+
+    // Process achievements
+    achievements.forEach(achievement => {
+      // Count by event type
+      stats.byEventType[achievement.event_type] = (stats.byEventType[achievement.event_type] || 0) + 1;
+
+      // Count by level
+      stats.byLevel[achievement.level] = (stats.byLevel[achievement.level] || 0) + 1;
+
+      // Count by month
+      if (achievement.event_date) {
+        const date = new Date(achievement.event_date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        stats.byMonth[monthKey] = (stats.byMonth[monthKey] || 0) + 1;
+      }
+
+      // Count participants
+      if (achievement.participants && achievement.participants.length > 0) {
+        totalParticipantsCount += achievement.participants.length;
+        stats.totalParticipants += achievement.participants.length;
+
+        achievement.participants.forEach(participant => {
+          if (participant.student_id) {
+            stats.studentParticipants++;
+          }
+          if (participant.teacher_id) {
+            stats.teacherParticipants++;
+          }
+
+          // Count ranks from results
+          if (participant.results && participant.results.length > 0) {
+            hasResults = true;
+            participant.results.forEach(result => {
+              if (result.rank) {
+                stats.topRanks[result.rank] = (stats.topRanks[result.rank] || 0) + 1;
+              }
+            });
+          }
+        });
+      }
+
+      // Check if achievement has results
+      if (hasResults) {
+        stats.achievementsWithResults++;
+        hasResults = false;
+      }
+    });
+
+    // Calculate average participants per event
+    if (achievements.length > 0) {
+      stats.averageParticipantsPerEvent = Math.round((totalParticipantsCount / achievements.length) * 10) / 10;
+    }
+
+    // Sort and organize top ranks
+    stats.topRanks = Object.entries(stats.topRanks)
+      .sort((a, b) => {
+        // Try to sort numerically if possible
+        const numA = parseInt(a[0]);
+        const numB = parseInt(b[0]);
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+        }
+        return a[0].localeCompare(b[0]);
+      })
+      .reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+
+    // Sort months
+    const sortedMonths = {};
+    Object.keys(stats.byMonth).sort().forEach(key => {
+      sortedMonths[key] = stats.byMonth[key];
+    });
+    stats.byMonth = sortedMonths;
+
+    res.status(200).json({ data: stats });
+  } catch (error) {
+    console.error("Error in getAchievementStatistics:", error);
     res.status(500).json({ error: error.message });
   }
 };

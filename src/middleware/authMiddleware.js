@@ -5,27 +5,43 @@ import { Session, User } from "../core/models/index.js";
 
 export const verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.status(403).json({ message: "Token required" });
+    const authHeader = req.headers["authorization"];
+    console.log('=== verifyToken called ===');
+    console.log('Authorization header:', authHeader);
+    
+    const token = authHeader?.split(" ")[1];
+    if (!token) {
+      console.log('ERROR: No token provided');
+      return res.status(403).json({ message: "Token required" });
+    }
 
+    console.log('Token exists, verifying...');
+    
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Token decoded successfully:', { userId: decoded.user_id, role: decoded.role, schoolId: decoded.school_id });
 
     // Check if session exists
     const session = await Session.findOne({ where: { access_token: token } });
     if (!session) {
-      return res.status(401).json({ message: "Session not found" });
+      console.log('ERROR: Session not found in database');
+      return res.status(401).json({ message: "Session not found - please login again" });
     }
+
+    console.log('Session found, expires at:', session.expires_at);
 
     // Check if token expired
     if (new Date() > session.expires_at) {
-      return res.status(401).json({ message: "Token expired" });
+      console.log('ERROR: Token expired at', session.expires_at);
+      return res.status(401).json({ message: "Token expired - please login again" });
     }
 
     req.user = decoded;
+    console.log('SUCCESS: req.user set:', { id: req.user.user_id, role: req.user.role });
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+    console.log('ERROR in verifyToken:', err.message);
+    return res.status(401).json({ message: "Invalid token: " + err.message });
   }
 };
 
