@@ -8,6 +8,7 @@ import {
   deleteStudent,
   uploadStudentPhoto,
   deleteStudentPhoto,
+  getClassesForImport,
   importStudentsFromExcel,
   downloadExcelTemplate,
   generateCardNumber,
@@ -24,6 +25,9 @@ const router = express.Router();
 
 // Download Excel template
 router.get("/template/download", verifyToken, authorize("superadmin", "admin"), downloadExcelTemplate);
+
+// Get classes for import
+router.get("/classes", verifyToken, authorize("superadmin", "admin"), getClassesForImport);
 
 // Search students
 router.get("/search", verifyToken, searchStudents);

@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed-runner.js",
+    "migrate": "node src/migrate.js",
+    "migrate:reset": "node src/migrate-reset.js"
   },
   "keywords": [],
   "author": "",

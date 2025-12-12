@@ -3,9 +3,8 @@ import { AcademicYear, School } from "../models/index.js";
 // Get all academic years
 export const getAllAcademicYears = async (req, res) => {
   try {
-    const { school_id, page = 1, limit = 10 } = req.query;
-    const where = {};
-    if (school_id) where.school_id = school_id;
+    const { page = 1, limit = 10 } = req.query;
+    const where = { school_id: req.user.school_id };
 
     // Convert to numbers and validate
     const pageNum = Math.max(1, parseInt(page));

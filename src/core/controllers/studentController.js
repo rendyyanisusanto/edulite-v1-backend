@@ -327,11 +327,59 @@ export const deleteStudentPhoto = async (req, res) => {
   }
 };
 
+// Get classes for import
+export const getClassesForImport = async (req, res) => {
+  try {
+    const school_id = req.user?.school_id || 1;
+
+    const classes = await ClassRoom.findAll({
+      where: { school_id },
+      include: [
+        {
+          model: Grade,
+          as: 'grade',
+          attributes: ['id', 'name']
+        }
+      ],
+      attributes: ['id', 'name'],
+      order: [
+        [{ model: Grade, as: 'grade' }, 'name', 'ASC'],
+        ['name', 'ASC']
+      ]
+    });
+
+    res.json({ data: classes });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Import students from Excel
 export const importStudentsFromExcel = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const { class_id } = req.body;
+    if (!class_id) {
+      return res.status(400).json({ message: "Class ID is required" });
+    }
+
+    // Get class details
+    const classRoom = await ClassRoom.findOne({
+      where: { id: class_id },
+      include: [
+        {
+          model: Grade,
+          as: 'grade',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
+
+    if (!classRoom) {
+      return res.status(400).json({ message: "Class not found" });
     }
 
     // Parse Excel file
@@ -352,29 +400,29 @@ export const importStudentsFromExcel = async (req, res) => {
 
     // Process each row with batch insert for performance
     const studentsToCreate = [];
-    
+
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
       const rowNum = i + 2; // Excel row number (accounting for header)
 
       try {
-        // Validate required fields
-        if (!row.name || !row.school_id) {
+        // Validate required fields - only name is required now
+        if (!row.name) {
           results.errors.push({
             row: rowNum,
             data: row,
-            error: "Missing required fields: name and school_id are required",
+            error: "Nama siswa wajib diisi",
           });
           continue;
         }
 
-        // Prepare student data
+        // Prepare student data with class info from request
         const studentData = {
           name: row.name,
-          school_id: parseInt(row.school_id),
-          academic_year_id: row.academic_year_id ? parseInt(row.academic_year_id) : null,
-          grade_id: row.grade_id ? parseInt(row.grade_id) : null,
-          class_id: row.class_id ? parseInt(row.class_id) : null,
+          school_id: classRoom.school_id,
+          academic_year_id: classRoom.academic_year_id || null,
+          grade_id: classRoom.grade_id,
+          class_id: class_id,
           department_id: row.department_id ? parseInt(row.department_id) : null,
           nis: row.nis || null,
           nisn: row.nisn || null,
@@ -410,23 +458,15 @@ export const importStudentsFromExcel = async (req, res) => {
       } catch (error) {
         // Provide more helpful error messages
         let errorMessage = error.message;
-        
-        if (error.message.includes('school_id')) {
-          errorMessage = "Invalid school_id. Please make sure the school_id exists in your system.";
-        } else if (error.message.includes('academic_year_id')) {
-          errorMessage = "Invalid academic_year_id. Please check the academic year ID.";
-        } else if (error.message.includes('grade_id')) {
-          errorMessage = "Invalid grade_id. Please check the grade ID.";
-        } else if (error.message.includes('class_id')) {
-          errorMessage = "Invalid class_id. Please check the class ID.";
-        } else if (error.message.includes('department_id')) {
+
+        if (error.message.includes('department_id')) {
           errorMessage = "Invalid department_id. Please check the department ID.";
         }
-        
+
         return res.status(400).json({
           message: "Failed to import students",
           error: errorMessage,
-          hint: "Please download the template again to get the correct IDs for your school",
+          hint: "Pastikan data siswa sudah benar. school_id, grade_id, dan class_id akan diisi otomatis.",
           results,
         });
       }
@@ -450,26 +490,42 @@ export const importStudentsFromExcel = async (req, res) => {
 // Download Excel template for import
 export const downloadExcelTemplate = async (req, res) => {
   try {
-    // Get user's school_id from token
-    const userSchoolId = req.user?.school_id || 1;
-    
-    // Fetch available data for the user's school
-    const [grades, classes, departments, academicYears] = await Promise.all([
-      Grade.findAll({ where: { school_id: userSchoolId }, attributes: ['id', 'name'] }),
-      ClassRoom.findAll({ where: { school_id: userSchoolId }, attributes: ['id', 'name'] }),
-      Department.findAll({ where: { school_id: userSchoolId }, attributes: ['id', 'name'] }),
-      AcademicYear.findAll({ where: { school_id: userSchoolId }, attributes: ['id', 'year'] })
-    ]);
-    
-    // Create template data
+    const { class_id } = req.query;
+    if (!class_id) {
+      return res.status(400).json({ message: "Class ID is required" });
+    }
+
+    // Get class details
+    const classRoom = await ClassRoom.findOne({
+      where: { id: class_id },
+      include: [
+        {
+          model: Grade,
+          as: 'grade',
+          attributes: ['id', 'name']
+        },
+        {
+          model: School,
+          as: 'school',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
+
+    if (!classRoom) {
+      return res.status(400).json({ message: "Class not found" });
+    }
+
+    // Get departments for the school
+    const departments = await Department.findAll({
+      where: { school_id: classRoom.school_id },
+      attributes: ['id', 'name']
+    });
+
+    // Create template data - simplified without IDs
     const templateData = [
       {
         name: "Contoh Nama Siswa",
-        school_id: userSchoolId,
-        academic_year_id: academicYears.length > 0 ? academicYears[0].id : "",
-        grade_id: grades.length > 0 ? grades[0].id : "",
-        class_id: classes.length > 0 ? classes[0].id : "",
-        department_id: departments.length > 0 ? departments[0].id : "",
         nis: "12345",
         nisn: "1234567890",
         date_of_birth: "2010-01-15",
@@ -477,59 +533,58 @@ export const downloadExcelTemplate = async (req, res) => {
         address: "Jl. Contoh No. 123",
         parent_name: "Nama Orang Tua",
         parent_phone: "081234567890",
+        department_id: departments.length > 0 ? departments[0].id : "",
       },
     ];
 
     // Create workbook and worksheet
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(templateData);
-    
-    // Add reference sheet with available IDs
-    const referenceData = [
-      { type: 'SCHOOL', id: userSchoolId, name: 'Your School' },
-      { type: '', id: '', name: '' },
-      { type: 'GRADES', id: '', name: 'Available Grades:' },
-      ...grades.map(g => ({ type: '', id: g.id, name: g.name })),
-      { type: '', id: '', name: '' },
-      { type: 'CLASSES', id: '', name: 'Available Classes:' },
-      ...classes.map(c => ({ type: '', id: c.id, name: c.name })),
-      { type: '', id: '', name: '' },
-      { type: 'DEPARTMENTS', id: '', name: 'Available Departments:' },
-      ...departments.map(d => ({ type: '', id: d.id, name: d.name })),
-      { type: '', id: '', name: '' },
-      { type: 'ACADEMIC_YEARS', id: '', name: 'Available Academic Years:' },
-      ...academicYears.map(ay => ({ type: '', id: ay.id, name: ay.year })),
+
+    // Add info sheet with class details and available departments
+    const infoData = [
+      { field: 'Kelas Tujuan', value: `${classRoom.grade?.name || ''} - ${classRoom.name}` },
+      { field: 'Sekolah', value: classRoom.school?.name || '' },
+      { field: '', value: '' },
+      { field: 'CATATAN', value: '' },
+      { field: 'Nama', value: 'Wajib diisi' },
+      { field: 'NIS', value: 'Opsional - Nomor Induk Siswa' },
+      { field: 'NISN', value: 'Opsional - Nomor Induk Siswa Nasional' },
+      { field: 'Tanggal Lahir', value: 'Opsional - Format: YYYY-MM-DD' },
+      { field: 'Jenis Kelamin', value: 'Opsional - L (Laki-laki) atau P (Perempuan)' },
+      { field: 'Alamat', value: 'Opsional' },
+      { field: 'Nama Orang Tua', value: 'Opsional' },
+      { field: 'Telepon Orang Tua', value: 'Opsional' },
+      { field: 'Department ID', value: 'Opsional - Lihat sheet Departemen' },
+      { field: '', value: '' },
+      { field: 'DEPARTEMEN TERSEDIA', value: '' },
+      ...departments.map(d => ({ field: d.id, value: d.name })),
     ];
-    
-    const referenceSheet = XLSX.utils.json_to_sheet(referenceData);
+
+    const infoSheet = XLSX.utils.json_to_sheet(infoData);
 
     // Set column widths for main sheet
     worksheet["!cols"] = [
-      { wch: 20 }, // name
-      { wch: 10 }, // school_id
-      { wch: 15 }, // academic_year_id
-      { wch: 10 }, // grade_id
-      { wch: 10 }, // class_id
-      { wch: 12 }, // department_id
-      { wch: 10 }, // nis
-      { wch: 12 }, // nisn
-      { wch: 12 }, // date_of_birth
-      { wch: 8 },  // gender
-      { wch: 30 }, // address
-      { wch: 20 }, // parent_name
-      { wch: 15 }, // parent_phone
+      { wch: 25 }, // name
+      { wch: 15 }, // nis
+      { wch: 15 }, // nisn
+      { wch: 15 }, // date_of_birth
+      { wch: 12 }, // gender
+      { wch: 40 }, // address
+      { wch: 30 }, // parent_name
+      { wch: 20 }, // parent_phone
+      { wch: 15 }, // department_id
     ];
-    
-    // Set column widths for reference sheet
-    referenceSheet["!cols"] = [
-      { wch: 20 }, // type
-      { wch: 10 }, // id
-      { wch: 40 }, // name
+
+    // Set column widths for info sheet
+    infoSheet["!cols"] = [
+      { wch: 25 }, // field
+      { wch: 50 }, // value
     ];
 
     // Add worksheets to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Template Import Siswa");
-    XLSX.utils.book_append_sheet(workbook, referenceSheet, "Referensi ID");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Siswa");
+    XLSX.utils.book_append_sheet(workbook, infoSheet, "Informasi");
 
     // Generate buffer
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });

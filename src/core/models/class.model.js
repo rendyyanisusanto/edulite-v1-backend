@@ -25,6 +25,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      academic_year_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       capacity: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -50,6 +54,10 @@ export default (sequelize, DataTypes) => {
     ClassRoom.belongsTo(models.Department, {
       foreignKey: "department_id",
       as: "department",
+    });
+    ClassRoom.belongsTo(models.AcademicYear, {
+      foreignKey: "academic_year_id",
+      as: "academicYear",
     });
     ClassRoom.belongsTo(models.Teacher, {
       foreignKey: "homeroom_teacher_id",
