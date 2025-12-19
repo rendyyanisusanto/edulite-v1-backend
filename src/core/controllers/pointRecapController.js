@@ -495,11 +495,11 @@ export const getGradePointRecap = async (req, res) => {
 };
 
 /**
- * Calculate/recalculate point recap and save to database
+ * Get real-time class point summary
  */
-export const calculatePointRecap = async (req, res) => {
+export const getClassPointSummary = async (req, res) => {
   try {
-    const { academic_year_id } = req.body;
+    const { academic_year_id, grade_id, class_id } = req.query;
 
     if (!academic_year_id) {
       return res.status(400).json({
@@ -510,72 +510,30 @@ export const calculatePointRecap = async (req, res) => {
 
     const school_id = req.user.school_id;
 
-    // Calculate and save student point recap
-    await sequelize.query(`
-      INSERT INTO student_point_recap (
-        student_id, school_id, academic_year_id,
-        total_violations, total_violation_points,
-        total_rewards, total_reward_points,
-        net_points, calculated_at
-      )
-      SELECT
-        s.id as student_id,
-        s.school_id,
-        s.academic_year_id,
-        COALESCE(v.total_violations, 0) as total_violations,
-        COALESCE(v.total_violation_points, 0) as total_violation_points,
-        COALESCE(r.total_rewards, 0) as total_rewards,
-        COALESCE(r.total_reward_points, 0) as total_reward_points,
-        COALESCE(r.total_reward_points, 0) - COALESCE(v.total_violation_points, 0) as net_points,
-        NOW() as calculated_at
-      FROM students s
-      LEFT JOIN (
-        SELECT
-          sv.student_id,
-          COUNT(*) as total_violations,
-          SUM(vt.point) as total_violation_points
-        FROM student_violations sv
-        INNER JOIN violation_types vt ON sv.type_id = vt.id
-        WHERE sv.status IN ('APPROVED', 'ACTIONED')
-        GROUP BY sv.student_id
-      ) v ON s.id = v.student_id
-      LEFT JOIN (
-        SELECT
-          sr.student_id,
-          COUNT(*) as total_rewards,
-          SUM(rt.point) as total_reward_points
-        FROM student_rewards sr
-        INNER JOIN reward_types rt ON sr.type_id = rt.id
-        WHERE sr.status IN ('APPROVED', 'ACTIONED')
-        GROUP BY sr.student_id
-      ) r ON s.id = r.student_id
-      WHERE s.school_id = ? AND s.academic_year_id = ?
-      ON DUPLICATE KEY UPDATE
-        total_violations = VALUES(total_violations),
-        total_violation_points = VALUES(total_violation_points),
-        total_rewards = VALUES(total_rewards),
-        total_reward_points = VALUES(total_reward_points),
-        net_points = VALUES(net_points),
-        calculated_at = VALUES(calculated_at)
-    `, {
-      replacements: [school_id, academic_year_id],
-      type: sequelize.QueryTypes.INSERT
-    });
+    let whereConditions = ['c.school_id = ?'];
+    const params = [school_id];
 
-    // Calculate and save class point recap
-    await sequelize.query(`
-      INSERT INTO class_point_recap (
-        class_id, school_id, academic_year_id,
-        total_students, total_violations, total_violation_points,
-        total_rewards, total_reward_points, total_net_points,
-        avg_net_points, students_with_positive_points,
-        students_with_negative_points, students_with_zero_points,
-        calculated_at
-      )
+    whereConditions.push('c.academic_year_id = ?');
+    params.push(academic_year_id);
+
+    if (grade_id) {
+      whereConditions.push('c.grade_id = ?');
+      params.push(grade_id);
+    }
+
+    if (class_id) {
+      whereConditions.push('c.id = ?');
+      params.push(class_id);
+    }
+
+    const whereClause = whereConditions.join(' AND ');
+
+    const query = `
       SELECT
         c.id as class_id,
-        c.school_id,
-        c.academic_year_id,
+        c.name as class_name,
+        g.name as grade_name,
+        d.name as department_name,
         COUNT(DISTINCT s.id) as total_students,
         COALESCE(SUM(v.total_violations), 0) as total_violations,
         COALESCE(SUM(v.total_violation_points), 0) as total_violation_points,
@@ -585,9 +543,10 @@ export const calculatePointRecap = async (req, res) => {
         COALESCE(AVG(r.total_reward_points - v.total_violation_points), 0) as avg_net_points,
         SUM(CASE WHEN (r.total_reward_points - v.total_violation_points) > 0 THEN 1 ELSE 0 END) as students_with_positive_points,
         SUM(CASE WHEN (r.total_reward_points - v.total_violation_points) < 0 THEN 1 ELSE 0 END) as students_with_negative_points,
-        SUM(CASE WHEN (r.total_reward_points - v.total_violation_points) = 0 THEN 1 ELSE 0 END) as students_with_zero_points,
-        NOW() as calculated_at
+        SUM(CASE WHEN (r.total_reward_points - v.total_violation_points) = 0 THEN 1 ELSE 0 END) as students_with_zero_points
       FROM classes c
+      LEFT JOIN grades g ON c.grade_id = g.id
+      LEFT JOIN departments d ON c.department_id = d.id
       LEFT JOIN students s ON c.id = s.class_id
       LEFT JOIN (
         SELECT
@@ -609,108 +568,26 @@ export const calculatePointRecap = async (req, res) => {
         WHERE sr.status IN ('APPROVED', 'ACTIONED')
         GROUP BY sr.student_id
       ) r ON s.id = r.student_id
-      WHERE c.school_id = ? AND c.academic_year_id = ?
-      GROUP BY c.id, c.school_id, c.academic_year_id
+      WHERE ${whereClause}
+      GROUP BY c.id, c.name, g.name, d.name
       HAVING total_students > 0
-      ON DUPLICATE KEY UPDATE
-        total_students = VALUES(total_students),
-        total_violations = VALUES(total_violations),
-        total_violation_points = VALUES(total_violation_points),
-        total_rewards = VALUES(total_rewards),
-        total_reward_points = VALUES(total_reward_points),
-        total_net_points = VALUES(total_net_points),
-        avg_net_points = VALUES(avg_net_points),
-        students_with_positive_points = VALUES(students_with_positive_points),
-        students_with_negative_points = VALUES(students_with_negative_points),
-        students_with_zero_points = VALUES(students_with_zero_points),
-        calculated_at = VALUES(calculated_at)
-    `, {
-      replacements: [school_id, academic_year_id],
-      type: sequelize.QueryTypes.INSERT
+      ORDER BY avg_net_points DESC
+    `;
+
+    const rows = await sequelize.query(query, {
+      replacements: params,
+      type: sequelize.QueryTypes.SELECT
     });
-
-    // Calculate and save grade point recap
-    await sequelize.query(`
-      INSERT INTO grade_point_recap (
-        grade_id, school_id, academic_year_id,
-        total_students, total_classes, total_violations, total_violation_points,
-        total_rewards, total_reward_points, total_net_points,
-        avg_net_points, calculated_at
-      )
-      SELECT
-        g.id as grade_id,
-        ? as school_id,
-        ? as academic_year_id,
-        COUNT(DISTINCT s.id) as total_students,
-        COUNT(DISTINCT c.id) as total_classes,
-        COALESCE(SUM(v.total_violations), 0) as total_violations,
-        COALESCE(SUM(v.total_violation_points), 0) as total_violation_points,
-        COALESCE(SUM(r.total_rewards), 0) as total_rewards,
-        COALESCE(SUM(r.total_reward_points), 0) as total_reward_points,
-        COALESCE(SUM(r.total_reward_points - v.total_violation_points), 0) as total_net_points,
-        COALESCE(AVG(r.total_reward_points - v.total_violation_points), 0) as avg_net_points,
-        NOW() as calculated_at
-      FROM grades g
-      LEFT JOIN classes c ON g.id = c.grade_id AND c.academic_year_id = ?
-      LEFT JOIN students s ON c.id = s.class_id
-      LEFT JOIN (
-        SELECT
-          sv.student_id,
-          COUNT(*) as total_violations,
-          SUM(vt.point) as total_violation_points
-        FROM student_violations sv
-        INNER JOIN violation_types vt ON sv.type_id = vt.id
-        WHERE sv.status IN ('APPROVED', 'ACTIONED')
-        GROUP BY sv.student_id
-      ) v ON s.id = v.student_id
-      LEFT JOIN (
-        SELECT
-          sr.student_id,
-          COUNT(*) as total_rewards,
-          SUM(rt.point) as total_reward_points
-        FROM student_rewards sr
-        INNER JOIN reward_types rt ON sr.type_id = rt.id
-        WHERE sr.status IN ('APPROVED', 'ACTIONED')
-        GROUP BY sr.student_id
-      ) r ON s.id = r.student_id
-      WHERE g.school_id = ?
-      GROUP BY g.id, g.school_id
-      HAVING total_students > 0
-      ON DUPLICATE KEY UPDATE
-        total_students = VALUES(total_students),
-        total_classes = VALUES(total_classes),
-        total_violations = VALUES(total_violations),
-        total_violation_points = VALUES(total_violation_points),
-        total_rewards = VALUES(total_rewards),
-        total_reward_points = VALUES(total_reward_points),
-        total_net_points = VALUES(total_net_points),
-        avg_net_points = VALUES(avg_net_points),
-        calculated_at = VALUES(calculated_at)
-    `, {
-      replacements: [school_id, academic_year_id, academic_year_id, school_id],
-      type: sequelize.QueryTypes.INSERT
-    });
-
-    // Count processed students
-    const [countResult] = await sequelize.query(
-      `SELECT COUNT(*) as count FROM students WHERE school_id = ? AND academic_year_id = ?`,
-      {
-        replacements: [school_id, academic_year_id],
-        type: sequelize.QueryTypes.SELECT
-      }
-    );
-
-    const processed = countResult.count;
 
     res.json({
       success: true,
-      message: `Rekapitulasi poin berhasil dihitung untuk ${processed} siswa.`
+      data: rows
     });
   } catch (error) {
-    console.error('Error calculating point recap:', error);
+    console.error('Error fetching class point summary:', error);
     res.status(500).json({
       success: false,
-      message: 'Gagal menghitung rekapitulasi',
+      message: 'Gagal mengambil data ringkasan poin kelas',
       error: error.message
     });
   }

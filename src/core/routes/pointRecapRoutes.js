@@ -16,8 +16,8 @@ router.get('/classes', verifyToken, authorize('superadmin', 'admin', 'guru'), po
 // Get grade point recap
 router.get('/grades', verifyToken, authorize('superadmin', 'admin', 'guru'), pointRecapController.getGradePointRecap);
 
-// Calculate/recalculate point recap (Admin only)
-router.post('/calculate', verifyToken, authorize('superadmin', 'admin'), pointRecapController.calculatePointRecap);
+// Get real-time class point summary
+router.get('/class-summary', verifyToken, authorize('superadmin', 'admin', 'guru'), pointRecapController.getClassPointSummary);
 
 // Get dashboard statistics
 router.get('/dashboard', verifyToken, authorize('superadmin', 'admin', 'guru'), pointRecapController.getDashboardStats);

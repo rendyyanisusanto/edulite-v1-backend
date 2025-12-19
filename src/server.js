@@ -24,10 +24,22 @@ import incomingLetterRoutes from "./core/routes/incomingLetterRoutes.js";
 import outgoingLetterRoutes from "./core/routes/outgoingLetterRoutes.js";
 import studentDocumentRoutes from "./core/routes/studentDocumentRoutes.js";
 import cardTemplateRoutes from "./core/routes/cardTemplateRoutes.js";
+import certificateTemplateRoutes from "./core/routes/certificateTemplateRoutes.js";
+import studentCertificateRoutes from "./core/routes/studentCertificateRoutes.js";
 import parentProfileRoutes from "./core/routes/parentProfileRoutes.js";
 import violationRoutes from "./core/routes/violationRoutes.js";
 import rewardRoutes from "./core/routes/rewardRoutes.js";
 import pointRecapRoutes from "./core/routes/pointRecapRoutes.js";
+import counselingCaseRoutes from "./core/routes/counselingCaseRoutes.js";
+import counselingSessionRoutes from "./core/routes/counselingSessionRoutes.js";
+import counselingFollowupRoutes from "./core/routes/counselingFollowupRoutes.js";
+import counselingDocumentRoutes from "./core/routes/counselingDocumentRoutes.js";
+import counselingScheduleRoutes from "./core/routes/counselingScheduleRoutes.js";
+import counselingReportRoutes from "./core/routes/counselingReportRoutes.js";
+import counselingRecapRoutes from "./core/routes/counselingRecapRoutes.js";
+import characterReportRoutes from "./core/routes/characterReportRoutes.js";
+import achievementReportRoutes from "./core/routes/achievementReportRoutes.js";
+import imageProxyRoutes from "./core/routes/imageProxyRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -55,43 +67,55 @@ app.use("/api/guestbooks", guestbookRoutes);
 app.use("/api/incoming-letters", incomingLetterRoutes);
 app.use("/api/outgoing-letters", outgoingLetterRoutes);
 app.use("/api/card-templates", cardTemplateRoutes);
+app.use("/api/certificate-templates", certificateTemplateRoutes);
+app.use("/api/student-certificates", studentCertificateRoutes);
 app.use("/api/parent-profiles", parentProfileRoutes);
 app.use("/api/violations", violationRoutes);
 app.use("/api/rewards", rewardRoutes);
 app.use("/api/point-recap", pointRecapRoutes);
+app.use("/api/counseling-cases", counselingCaseRoutes);
+app.use("/api/counseling-sessions", counselingSessionRoutes);
+app.use("/api/counseling-followups", counselingFollowupRoutes);
+app.use("/api/counseling-documents", counselingDocumentRoutes);
+app.use("/api/counseling-schedules", counselingScheduleRoutes);
+app.use("/api/counseling-report", counselingReportRoutes);
+app.use("/api/counseling-recap", counselingRecapRoutes);
+app.use("/api/character-report", characterReportRoutes);
+app.use("/api/achievement-reports", achievementReportRoutes);
+app.use("/api/proxy/image", imageProxyRoutes);
 
 // Health check endpoint
 // Health check endpoint
 app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", message: "Server is running" });
+    res.json({ status: "OK", message: "Server is running" });
 });
 
 // Test database connection
 sequelize
-  .authenticate()
-  .then(() => console.log("✅ Database connected successfully"))
-  .catch((err) => console.log("❌ DB error:", err));
+    .authenticate()
+    .then(() => console.log("✅ Database connected successfully"))
+    .catch((err) => console.log("❌ DB error:", err));
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 API Documentation:`);
-  console.log(`   - Auth: http://localhost:${PORT}/api/auth`);
-  console.log(`   - Schools: http://localhost:${PORT}/api/schools`);
-  console.log(`   - Users: http://localhost:${PORT}/api/users`);
-  console.log(`   - Students: http://localhost:${PORT}/api/students`);
-  console.log(`   - Teachers: http://localhost:${PORT}/api/teachers`);
-  console.log(`   - Roles: http://localhost:${PORT}/api/roles`);
-  console.log(`   - Apps: http://localhost:${PORT}/api/apps`);
-  console.log(`   - School Apps: http://localhost:${PORT}/api/school-apps`);
-  console.log(`   - Academic Years: http://localhost:${PORT}/api/academic-years`);
-  console.log(`   - Grades: http://localhost:${PORT}/api/grades`);
-  console.log(`   - Departments: http://localhost:${PORT}/api/departments`);
-  console.log(`   - Classes: http://localhost:${PORT}/api/classes`);
-  console.log(`   - Student Mutations: http://localhost:${PORT}/api/student-mutations`);
-  console.log(`   - Student Class History: http://localhost:${PORT}/api/student-class-history`);
-  console.log(`   - Achievements: http://localhost:${PORT}/api/achievements`);
-  console.log(`   - Guestbooks: http://localhost:${PORT}/api/guestbooks`);
-  console.log(`   - Incoming Letters: http://localhost:${PORT}/api/incoming-letters`);
-  console.log(`   - Outgoing Letters: http://localhost:${PORT}/api/outgoing-letters`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📝 API Documentation:`);
+    console.log(`   - Auth: http://localhost:${PORT}/api/auth`);
+    console.log(`   - Schools: http://localhost:${PORT}/api/schools`);
+    console.log(`   - Users: http://localhost:${PORT}/api/users`);
+    console.log(`   - Students: http://localhost:${PORT}/api/students`);
+    console.log(`   - Teachers: http://localhost:${PORT}/api/teachers`);
+    console.log(`   - Roles: http://localhost:${PORT}/api/roles`);
+    console.log(`   - Apps: http://localhost:${PORT}/api/apps`);
+    console.log(`   - School Apps: http://localhost:${PORT}/api/school-apps`);
+    console.log(`   - Academic Years: http://localhost:${PORT}/api/academic-years`);
+    console.log(`   - Grades: http://localhost:${PORT}/api/grades`);
+    console.log(`   - Departments: http://localhost:${PORT}/api/departments`);
+    console.log(`   - Classes: http://localhost:${PORT}/api/classes`);
+    console.log(`   - Student Mutations: http://localhost:${PORT}/api/student-mutations`);
+    console.log(`   - Student Class History: http://localhost:${PORT}/api/student-class-history`);
+    console.log(`   - Achievements: http://localhost:${PORT}/api/achievements`);
+    console.log(`   - Guestbooks: http://localhost:${PORT}/api/guestbooks`);
+    console.log(`   - Incoming Letters: http://localhost:${PORT}/api/incoming-letters`);
+    console.log(`   - Outgoing Letters: http://localhost:${PORT}/api/outgoing-letters`);
 });

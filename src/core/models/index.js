@@ -30,6 +30,8 @@ import LetterDispositionModel from "./LetterDisposition.js";
 import DocumentTypeModel from "./documentType.model.js";
 import StudentDocumentModel from "./studentDocument.model.js";
 import CardTemplateModel from "./cardTemplate.model.js";
+import CertificateTemplateModel from "./certificateTemplate.model.js";
+import StudentCertificateModel from "./studentCertificate.model.js";
 import ParentProfileModel from "./parentProfile.model.js";
 import ParentDocumentModel from "./parentDocument.model.js";
 import ViolationLevelModel from "./violationLevel.model.js";
@@ -40,6 +42,11 @@ import RewardLevelModel from "./rewardLevel.model.js";
 import RewardTypeModel from "./rewardType.model.js";
 import RewardActionModel from "./rewardAction.model.js";
 import StudentRewardModel from "./studentReward.model.js";
+import CounselingCaseModel from "./CounselingCase.js";
+import CounselingSessionModel from "./CounselingSession.js";
+import CounselingFollowupModel from "./CounselingFollowup.js";
+import CounselingDocumentModel from "./CounselingDocument.js";
+import CounselingScheduleModel from "./CounselingSchedule.js";
 
 // Inisialisasi models
 const User = UserModel(sequelize, DataTypes);
@@ -70,6 +77,8 @@ const LetterDisposition = LetterDispositionModel(sequelize, DataTypes);
 const DocumentType = DocumentTypeModel(sequelize, DataTypes);
 const StudentDocument = StudentDocumentModel(sequelize, DataTypes);
 const CardTemplate = CardTemplateModel(sequelize, DataTypes);
+const CertificateTemplate = CertificateTemplateModel(sequelize, DataTypes);
+const StudentCertificate = StudentCertificateModel(sequelize, DataTypes);
 const ParentProfile = ParentProfileModel(sequelize, DataTypes);
 const ParentDocument = ParentDocumentModel(sequelize, DataTypes);
 const ViolationLevel = ViolationLevelModel(sequelize, DataTypes);
@@ -80,6 +89,11 @@ const RewardLevel = RewardLevelModel(sequelize, DataTypes);
 const RewardType = RewardTypeModel(sequelize, DataTypes);
 const RewardAction = RewardActionModel(sequelize, DataTypes);
 const StudentReward = StudentRewardModel(sequelize, DataTypes);
+const CounselingCase = CounselingCaseModel(sequelize, DataTypes);
+const CounselingSession = CounselingSessionModel(sequelize, DataTypes);
+const CounselingFollowup = CounselingFollowupModel(sequelize, DataTypes);
+const CounselingDocument = CounselingDocumentModel(sequelize, DataTypes);
+const CounselingSchedule = CounselingScheduleModel(sequelize, DataTypes);
 
 // Setup associations
 const models = {
@@ -111,6 +125,8 @@ const models = {
   DocumentType,
   StudentDocument,
   CardTemplate,
+  CertificateTemplate,
+  StudentCertificate,
   ParentProfile,
   ParentDocument,
   ViolationLevel,
@@ -121,6 +137,11 @@ const models = {
   RewardType,
   RewardAction,
   StudentReward,
+  CounselingCase,
+  CounselingSession,
+  CounselingFollowup,
+  CounselingDocument,
+  CounselingSchedule,
 };
 
 Object.keys(models).forEach((modelName) => {
@@ -134,16 +155,16 @@ Object.keys(models).forEach((modelName) => {
 //   console.log("Database synced");
 // });
 
-export { 
-  sequelize, 
-  User, 
-  School, 
-  Student, 
-  Teacher, 
-  Role, 
-  UserRole, 
-  App, 
-  SchoolApp, 
+export {
+  sequelize,
+  User,
+  School,
+  Student,
+  Teacher,
+  Role,
+  UserRole,
+  App,
+  SchoolApp,
   Session,
   AcademicYear,
   Grade,
@@ -166,7 +187,14 @@ export {
   RewardType,
   RewardAction,
   StudentReward,
+  CounselingCase,
+  CounselingSession,
+  CounselingFollowup,
+  CounselingDocument,
+  CounselingSchedule,
   CardTemplate,
+  CertificateTemplate,
+  StudentCertificate,
   ParentProfile,
   ParentDocument,
   LetterApproval,

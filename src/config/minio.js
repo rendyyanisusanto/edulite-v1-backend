@@ -5,16 +5,16 @@ import path from "path";
 
 // MinIO Configuration
 const s3Client = new S3Client({
-  endpoint: "https://objectstorage.simsmk.sch.id",
+  endpoint: process.env.MINIO_ENDPOINT,
   region: "us-east-1", // MinIO doesn't use regions, but SDK requires it
   credentials: {
-    accessKeyId: "rendy",
-    secretAccessKey: "Tahutelor123",
+    accessKeyId: process.env.MINIO_ACCESS_KEY,
+    secretAccessKey: process.env.MINIO_SECRET_KEY,
   },
   forcePathStyle: true, // WAJIB untuk MinIO
 });
 
-const BUCKET_NAME = "edulite"; // Nama bucket untuk foto siswa
+const BUCKET_NAME = process.env.MINIO_BUCKET_NAME; // Nama bucket untuk foto siswa
 
 /**
  * Upload file ke MinIO
@@ -37,12 +37,17 @@ export const uploadFile = async (fileBuffer, originalName, mimeType, folder = "p
       Body: fileBuffer,
       ContentType: mimeType,
       // ACL: "public-read", // Uncomment jika ingin file public
+      // Add CORS headers for certificate backgrounds
+      Metadata: {
+        'Access-Control-Allow-Origin': '*',
+      },
+      CacheControl: 'public, max-age=31536000',
     });
 
     await s3Client.send(command);
 
     // Generate URL
-    const url = `https://objectstorage.simsmk.sch.id/${BUCKET_NAME}/${key}`;
+    const url = `${process.env.MINIO_ENDPOINT}/${BUCKET_NAME}/${key}`;
 
     return {
       key,
@@ -103,7 +108,7 @@ export const getSignedFileUrl = async (key, expiresIn = 3600) => {
  */
 export const extractKeyFromUrl = (url) => {
   if (!url) return null;
-  
+
   try {
     const urlObj = new URL(url);
     // Format: https://objectstorage.simsmk.sch.id/edulite-students/photos/xxx.jpg

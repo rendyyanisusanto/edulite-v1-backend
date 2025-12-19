@@ -83,6 +83,10 @@ export default (sequelize, DataTypes) => {
       foreignKey: "student_id",
       as: "parents",
     });
+    Student.hasMany(models.AchievementParticipant, {
+      foreignKey: "student_id",
+      as: "achievementParticipants",
+    });
   };
 
   return Student;

@@ -83,7 +83,7 @@ export const createTeacher = async (req, res) => {
 // Update teacher
 export const updateTeacher = async (req, res) => {
   try {
-    const { school_id,name, nip, position, subject } = req.body;
+    const { school_id, name, nip, position, subject } = req.body;
     const teacher = await Teacher.findByPk(req.params.id);
     if (!teacher) {
       return res.status(404).json({ message: "Teacher not found" });
